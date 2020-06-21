@@ -3,12 +3,12 @@
 namespace Bausch\FlarumLaravelSession;
 
 use Closure;
+use Illuminate\Container\Container;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Foundation\Auth\User;
 use Illuminate\Http\Request;
 use Illuminate\Session\FileSessionHandler;
 use Illuminate\Session\Store;
-use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
@@ -81,7 +81,7 @@ class FlarumMiddleware
     protected function getFileSessionHandler(): FileSessionHandler
     {
         // Create filesystem
-        $filesystem = new Filesystem();
+        $filesystem = Container::getInstance()->make(Filesystem::class);
 
         // Get path to session files
         $session_path = Config::get('flarum.session.path');
@@ -134,6 +134,6 @@ class FlarumMiddleware
      */
     protected function getUser(): User
     {
-        return App::make(config('flarum.model'));
+        return Container::getInstance()->make(Config::get('flarum.model'));
     }
 }
