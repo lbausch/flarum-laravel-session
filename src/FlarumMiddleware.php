@@ -40,12 +40,7 @@ class FlarumMiddleware
         $session_store = new Store('flarum-laravel-session', $this->getFileSessionHandler(), $flarum_session_id);
 
         // Start session
-        $session_started = $session_store->start();
-
-        // Abort if session could'nt be started
-        if (!$session_started) {
-            abort(403);
-        }
+        $session_store->start();
 
         // Try to get user id
         $user_id = $session_store->get('user_id', false);
