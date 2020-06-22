@@ -118,7 +118,9 @@ class FlarumMiddleware
         $user->password = bcrypt(Str::random(30));
 
         // Save user
-        $user->save();
+        if ($user->isDirty()) {
+            $user->save();
+        }
 
         // Return user
         return $user;
