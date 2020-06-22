@@ -56,7 +56,7 @@ class FlarumMiddleware
         }
 
         // Get Flarum user from Flarum database
-        $flarum_user = DB::connection(Config::get('flarum.database_connection'))->table('users')->find($user_id);
+        $flarum_user = DB::connection(Config::get('flarum.db_connection'))->table('users')->find($user_id);
 
         // Abort if no Flarum user is present in database
         if (!$flarum_user) {
