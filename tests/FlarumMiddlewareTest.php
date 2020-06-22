@@ -189,6 +189,46 @@ final class MiddlewareTest extends TestCase
         $this->assertTrue($next_request_executed);
     }
 
+    public function testMiddlewareRedirectsIfUserWasNotFound()
+    {
+        $session_id = $this->generateSessionId();
+        $session_file = Config::get('flarum.session.path').'/'.$session_id;
+
+        // Mock Filesystem
+        $this->partialMock(Filesystem::class, function ($mock) use ($session_file) {
+            $mock->shouldReceive('isFile')
+                ->once()
+                ->with($session_file)
+                ->andReturn(true);
+
+            $mock->shouldReceive('lastModified')
+                ->once()
+                ->with($session_file)
+                ->andReturn(time());
+
+            $mock->shouldReceive('sharedGet')
+                ->once()
+                ->with($session_file)
+                ->andReturn(serialize(['user_id' => 2]));
+        });
+
+        $request = new Request($query = [], $request = [], $attributes = [], $cookies = [
+            'flarum_session' => $session_id,
+        ]);
+
+        $exception_was_thrown = false;
+
+        try {
+            $response = (new FlarumMiddleware())->handle($request, function ($request) {});
+        } catch (HttpException $exception) {
+            $this->assertEquals(403, $exception->getStatusCode());
+
+            $exception_was_thrown = true;
+        }
+
+        $this->assertTrue($exception_was_thrown);
+    }
+
     /**
      * Generate session id.
      */
