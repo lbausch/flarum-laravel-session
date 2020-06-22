@@ -98,7 +98,7 @@ class FlarumMiddleware
     protected function createOrUpdateUser(?User $user, object $flarum_user): User
     {
         // Get a user instance
-        if (is_null($user)) {
+        if (null === $user) {
             $user = $this->getUser();
         }
 
