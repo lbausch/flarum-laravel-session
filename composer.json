@@ -1,11 +1,20 @@
 {
     "name": "lbausch/flarum-laravel-session",
-    "description": "Use Flarum's session within Laravel",
+    "description": "Use the session of Flarum within Laravel.",
     "type": "library",
-    "require-dev": {
-        "orchestra/testbench": "^5.3"
-    },
     "license": "MIT",
+    "keywords": [
+        "auth",
+        "authentication",
+        "flarum",
+        "laravel",
+        "session",
+        "share"
+    ],
+    "support": {
+        "issues": "https://github.com/lbausch/flarum-laravel-session/issues",
+        "source": "https://github.com/lbausch/flarum-laravel-session"
+    },
     "authors": [
         {
             "name": "Lorenz Bausch",
@@ -13,16 +22,25 @@
         }
     ],
     "require": {
-        "php": "^7.4",
+        "php": "^7.2",
         "illuminate/auth": "^7.0",
         "illuminate/filesystem": "^7.0",
         "illuminate/http": "^7.0",
         "illuminate/session": "^7.0",
         "illuminate/support": "^7.0"
     },
+    "require-dev": {
+        "orchestra/testbench": "^5.3",
+        "phpunit/phpunit": "8.*"
+    },
     "autoload": {
         "psr-4": {
             "Bausch\\FlarumLaravelSession\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
         }
     },
     "extra": {
