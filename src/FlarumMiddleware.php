@@ -106,17 +106,12 @@ class FlarumMiddleware
             $user = $this->getUser();
         }
 
-        // Attributes to update: local user => flarum user
-        $attributes = [
-            'username' => 'username',
-            'nickname' => 'nickname',
-            'flarum_id' => 'id',
-            'email' => 'email',
-        ];
+        // Attributes to update: Flarum user => local user
+        $update_attributes = Config::get('flarum.update_attributes', []);
 
         // Update attributes
-        foreach ($attributes as $attribute) {
-            $user->{$attribute} = $flarum_user->{$attribute};
+        foreach ($update_attributes as $flarum_attribute => $local_attribute) {
+            $user->{$local_attribute} = $flarum_user->{$flarum_attribute};
         }
 
         // Set a random password
