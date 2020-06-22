@@ -1,5 +1,7 @@
 # Flarum Laravel Session <!-- omit in toc -->
 
+![tests](https://github.com/lbausch/flarum-laravel-session/workflows/tests/badge.svg) [![Codacy Badge](https://app.codacy.com/project/badge/Coverage/08e639f60aca4927891fa9e4661003bd)](https://www.codacy.com/manual/lbausch/flarum-laravel-session)
+
 **Disclaimer**: This package is still a proof of concept.
 
 - [What it does](#what-it-does)
