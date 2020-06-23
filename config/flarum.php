@@ -23,7 +23,7 @@ return [
         /*
          * Absolute path to the session directory of Flarum
          */
-        'path' => base_path('flarum/storage/sessions'),
+        'path' => env('FLARUM_SESSION_PATH', base_path('flarum/storage/sessions')),
     ],
 
     /*
