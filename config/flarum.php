@@ -9,7 +9,7 @@ return [
     /*
      * Model which is authenticatable
      */
-    'model' => App\User::class,
+    'model' => config('auth.providers.users.model', App\User::class),
 
     /*
      * Flarum session configuration
