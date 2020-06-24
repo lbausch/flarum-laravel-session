@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests;
 
-use Bausch\FlarumLaravelSession\FlarumMiddleware;
+use Bausch\FlarumLaravelSession\FlarumSessionMiddleware;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
@@ -19,7 +19,7 @@ final class MiddlewareTest extends TestCase
         $exception_was_thrown = false;
 
         try {
-            $response = (new FlarumMiddleware())->handle(new Request(), function ($request) {});
+            $response = (new FlarumSessionMiddleware())->handle(new Request(), function ($request) {});
         } catch (HttpException $exception) {
             $this->assertEquals(403, $exception->getStatusCode());
 
@@ -35,7 +35,7 @@ final class MiddlewareTest extends TestCase
             'flarum_session' => 'foobar',
         ]);
 
-        $response = (new FlarumMiddleware())->handle($request, function ($request) {});
+        $response = (new FlarumSessionMiddleware())->handle($request, function ($request) {});
 
         $this->assertEquals(Config::get('flarum.url'), $response->getTargetUrl());
     }
@@ -69,7 +69,7 @@ final class MiddlewareTest extends TestCase
 
         $next_request_executed = false;
 
-        $response = (new FlarumMiddleware())->handle($request, function ($request) use (&$next_request_executed) {
+        $response = (new FlarumSessionMiddleware())->handle($request, function ($request) use (&$next_request_executed) {
             $next_request_executed = true;
         });
 
@@ -116,7 +116,7 @@ final class MiddlewareTest extends TestCase
 
         $next_request_executed = false;
 
-        $response = (new FlarumMiddleware())->handle($request, function ($request) use (&$next_request_executed) {
+        $response = (new FlarumSessionMiddleware())->handle($request, function ($request) use (&$next_request_executed) {
             $next_request_executed = true;
         });
 
@@ -162,7 +162,7 @@ final class MiddlewareTest extends TestCase
 
         $next_request_executed = false;
 
-        $response = (new FlarumMiddleware())->handle($request, function ($request) use (&$next_request_executed) {
+        $response = (new FlarumSessionMiddleware())->handle($request, function ($request) use (&$next_request_executed) {
             $next_request_executed = true;
         });
 
@@ -182,7 +182,7 @@ final class MiddlewareTest extends TestCase
 
         $next_request_executed = false;
 
-        $response = (new FlarumMiddleware())->handle($request, function ($request) use (&$next_request_executed) {
+        $response = (new FlarumSessionMiddleware())->handle($request, function ($request) use (&$next_request_executed) {
             $next_request_executed = true;
         });
 
@@ -219,7 +219,7 @@ final class MiddlewareTest extends TestCase
         $exception_was_thrown = false;
 
         try {
-            $response = (new FlarumMiddleware())->handle($request, function ($request) {});
+            $response = (new FlarumSessionMiddleware())->handle($request, function ($request) {});
         } catch (HttpException $exception) {
             $this->assertEquals(403, $exception->getStatusCode());
 

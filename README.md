@@ -46,7 +46,7 @@ Register the middleware in `app/Http/Kernel.php`:
  */
 protected $routeMiddleware = [
     // ...
-    'flarum' => \Bausch\FlarumLaravelSession\FlarumMiddleware::class,
+    'flarum' => \Bausch\FlarumLaravelSession\FlarumSessionMiddleware::class,
     // ...
 ];
 ```

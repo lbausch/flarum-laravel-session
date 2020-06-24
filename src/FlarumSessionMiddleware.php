@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
-class FlarumMiddleware
+class FlarumSessionMiddleware
 {
     /**
      * Handle an incoming request.
