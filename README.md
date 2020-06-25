@@ -13,6 +13,8 @@
   - [Publish Package Configuration](#publish-package-configuration)
   - [Disable Cookie Encryption](#disable-cookie-encryption)
 - [Usage](#usage)
+  - [Setup Middleware](#setup-middleware)
+  - [Updating Attributes](#updating-attributes)
 - [Accessing Session Cookie From Different Domain](#accessing-session-cookie-from-different-domain)
 
 ## What It Does
@@ -92,6 +94,8 @@ protected $except = [
 ```
 
 ## Usage
+
+### Setup Middleware
 In `routes/web.php` you may assign the middleware as desired:
 ```php
 Route::middleware(['flarum'])->group(function () {
@@ -100,6 +104,11 @@ Route::middleware(['flarum'])->group(function () {
     });
 });
 ```
+
+### Updating Attributes
+Attributes which are updated upon a successful authentication can be specified by modifying the array `update_attributes` in `config/flarum.php`.
+To track the relationship between your local user and the Flarum user, you may add a column `flarum_id` to your users table.
+
 
 ## Accessing Session Cookie From Different Domain
 If Flarum is running on domain.tld and Laravel on sub.domain.tld you need to configure Flarum (`config.php`), so the session cookie can be accessed on the subdomain:
