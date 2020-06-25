@@ -25,7 +25,6 @@ class FlarumSessionMiddleware
     {
         // If the user is already authenticated, continue
         if (Auth::check()) {
-            // dd('asf');
             return $next($request);
         }
 
