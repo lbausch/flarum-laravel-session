@@ -3,18 +3,18 @@
 namespace Bausch\FlarumLaravelSession;
 
 use Closure;
+use Illuminate\Container\Container;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Foundation\Auth\User;
 use Illuminate\Http\Request;
 use Illuminate\Session\FileSessionHandler;
 use Illuminate\Session\Store;
-use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
-class FlarumMiddleware
+class FlarumSessionMiddleware
 {
     /**
      * Handle an incoming request.
@@ -40,12 +40,7 @@ class FlarumMiddleware
         $session_store = new Store('flarum-laravel-session', $this->getFileSessionHandler(), $flarum_session_id);
 
         // Start session
-        $session_started = $session_store->start();
-
-        // Abort if session could'nt be started
-        if (!$session_started) {
-            abort(403);
-        }
+        $session_store->start();
 
         // Try to get user id
         $user_id = $session_store->get('user_id', false);
@@ -56,7 +51,7 @@ class FlarumMiddleware
         }
 
         // Get Flarum user from Flarum database
-        $flarum_user = DB::connection(Config::get('flarum.database_connection'))->table('users')->find($user_id);
+        $flarum_user = DB::connection(Config::get('flarum.db_connection'))->table('users')->find($user_id);
 
         // Abort if no Flarum user is present in database
         if (!$flarum_user) {
@@ -81,7 +76,7 @@ class FlarumMiddleware
     protected function getFileSessionHandler(): FileSessionHandler
     {
         // Create filesystem
-        $filesystem = new Filesystem();
+        $filesystem = Container::getInstance()->make(Filesystem::class);
 
         // Get path to session files
         $session_path = Config::get('flarum.session.path');
@@ -102,28 +97,25 @@ class FlarumMiddleware
     protected function createOrUpdateUser(?User $user, object $flarum_user): User
     {
         // Get a user instance
-        if (is_null($user)) {
+        if (null === $user) {
             $user = $this->getUser();
         }
 
-        // Attributes to update: local user => flarum user
-        $attributes = [
-            'username' => 'username',
-            'nickname' => 'nickname',
-            'flarum_id' => 'id',
-            'email' => 'email',
-        ];
+        // Attributes to update: Flarum user => local user
+        $update_attributes = Config::get('flarum.update_attributes', []);
 
         // Update attributes
-        foreach ($attributes as $attribute) {
-            $user->{$attribute} = $flarum_user->{$attribute};
+        foreach ($update_attributes as $flarum_attribute => $local_attribute) {
+            $user->{$local_attribute} = $flarum_user->{$flarum_attribute};
         }
 
         // Set a random password
         $user->password = bcrypt(Str::random(30));
 
         // Save user
-        $user->save();
+        if ($user->isDirty()) {
+            $user->save();
+        }
 
         // Return user
         return $user;
@@ -134,6 +126,6 @@ class FlarumMiddleware
      */
     protected function getUser(): User
     {
-        return App::make(config('flarum.model'));
+        return Container::getInstance()->make(Config::get('flarum.model'));
     }
 }

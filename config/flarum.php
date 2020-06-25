@@ -9,7 +9,7 @@ return [
     /*
      * Model which is authenticatable
      */
-    'model' => App\User::class,
+    'model' => config('auth.providers.users.model', App\User::class),
 
     /*
      * Flarum session configuration
@@ -23,11 +23,20 @@ return [
         /*
          * Absolute path to the session directory of Flarum
          */
-        'path' => base_path('flarum/storage/sessions'),
+        'path' => env('FLARUM_SESSION_PATH', base_path('flarum/storage/sessions')),
     ],
 
     /*
      * Flarum database connection as defined in config/database.php
      */
     'db_connection' => env('FLARUM_DB_CONNECTION', 'flarum'),
+
+    /*
+     * Attributes to update upon successful authentication: Flarum user => local user
+     */
+    'update_attributes' => [
+        'username' => 'username',
+        'id' => 'flarum_id',
+        'email' => 'email',
+    ],
 ];
