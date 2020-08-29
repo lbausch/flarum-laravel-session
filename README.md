@@ -33,7 +33,7 @@ Based on the user information in the Flarum database an user in the Laravel appl
 ### Composer
 Install the package with Composer:
 ```bash
-composer require lbausch/flarum-laravel-session:dev-master
+composer require lbausch/flarum-laravel-session
 ```
 
 ### Register Middleware

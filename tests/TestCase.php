@@ -2,7 +2,6 @@
 
 namespace Tests;
 
-use Illuminate\Support\Facades\DB;
 use Bausch\FlarumLaravelSession\ServiceProvider;
 use Orchestra\Testbench\TestCase as BaseTestCase;
 use Tests\Models\User;
@@ -49,9 +48,9 @@ abstract class TestCase extends BaseTestCase
         // Local database
         $app['config']->set('database.default', 'testing');
         $app['config']->set('database.connections.testing', [
-            'driver'   => 'sqlite',
+            'driver' => 'sqlite',
             'database' => ':memory:',
-            'prefix'   => '',
+            'prefix' => '',
         ]);
 
         // Flarum database

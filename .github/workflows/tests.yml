@@ -48,13 +48,12 @@ jobs:
         run: composer update --${{ matrix.stability }} --prefer-dist --no-interaction --no-progress
 
       - name: Execute tests
-        run: vendor/bin/phpunit --verbose --coverage-xml .coverage-xml
+        run: vendor/bin/phpunit --verbose --coverage-clover coverage.xml
         env:
           DB_PORT: ${{ job.services.mysql.ports[3306] }}
           DB_USERNAME: root
 
-      - name: Run codacy-coverage-reporter
-        uses: codacy/codacy-coverage-reporter-action@master
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v1
         with:
-          project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
-          coverage-reports: .coverage-xml/index.xml
+          file: ./coverage.xml
