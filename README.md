@@ -2,8 +2,6 @@
 
 ![tests](https://github.com/lbausch/flarum-laravel-session/workflows/tests/badge.svg) [![codecov](https://codecov.io/gh/lbausch/flarum-laravel-session/branch/master/graph/badge.svg)](https://codecov.io/gh/lbausch/flarum-laravel-session)
 
-**Disclaimer**: This package is still a proof of concept.
-
 - [What It Does](#what-it-does)
 - [Requirements](#requirements)
 - [Installation and Configuration](#installation-and-configuration)
