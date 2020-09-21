@@ -14,7 +14,7 @@
   - [Disable Cookie Encryption](#disable-cookie-encryption)
 - [Usage](#usage)
   - [Setup Middleware](#setup-middleware)
-  - [Updating Attributes](#updating-attributes)
+  - [Handle An Identified User](#handle-an-identified-user)
 - [Accessing Session Cookie From Different Domain](#accessing-session-cookie-from-different-domain)
 
 ## What It Does
@@ -105,10 +105,43 @@ Route::middleware(['flarum'])->group(function () {
 });
 ```
 
-### Updating Attributes
-Attributes which are updated upon a successful authentication can be specified by modifying the array `update_attributes` in `config/flarum.php`.
-To track the relationship between your local user and the Flarum user, you may add a column `flarum_id` to your users table.
+### Handle An Identified User
+Once the middleware successfully identified an user, it executes the default handler `HandleIdentifiedUser`. You may configure a different handler by calling `FlarumLaravelSession::handleIdentifiedUser()` in a service provider. This is a perfect place to update attributes or execute further actions, just remember to implement the `FlarumUserIdentified` interface.
 
+```php
+<?php
+
+namespace App\Providers;
+
+use Illuminate\Support\ServiceProvider;
+use Bausch\FlarumLaravelSession\FlarumLaravelSession;
+use App\Handlers\YourCustomHandler;
+
+class AppServiceProvider extends ServiceProvider
+{
+    /**
+     * Register any application services.
+     *
+     * @return void
+     */
+    public function register()
+    {
+        //
+    }
+
+    /**
+     * Bootstrap any application services.
+     *
+     * @return void
+     */
+    public function boot()
+    {
+        FlarumLaravelSession::handleIdentifiedUser(YourCustomHandler::class);
+    }
+}
+```
+
+If you need to use a different user model, you may call `FlarumLaravelSession::useUserModel(User::class);` in your service provider.
 
 ## Accessing Session Cookie From Different Domain
 If Flarum is running on domain.tld and Laravel on sub.domain.tld you need to configure Flarum (`config.php`), so the session cookie can be accessed on the subdomain:

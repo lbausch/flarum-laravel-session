@@ -2,17 +2,16 @@
 
 namespace Bausch\FlarumLaravelSession;
 
+use Bausch\FlarumLaravelSession\Contracts\FlarumUserIdentified;
 use Closure;
 use Illuminate\Container\Container;
 use Illuminate\Filesystem\Filesystem;
-use Illuminate\Foundation\Auth\User;
 use Illuminate\Http\Request;
 use Illuminate\Session\FileSessionHandler;
 use Illuminate\Session\Store;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 
 class FlarumSessionMiddleware
 {
@@ -58,16 +57,11 @@ class FlarumSessionMiddleware
             abort(403);
         }
 
-        // Find the corresponding local user
-        $user = $this->getUser()->where('flarum_id', $flarum_user->id)->first();
+        // Get Handler for handling Flarum user
+        $handler = Container::getInstance()->make(FlarumUserIdentified::class);
 
-        // Create or update the corresponding local user
-        $user = $this->createOrUpdateUser($user, $flarum_user);
-
-        // Login the local user and remember him
-        Auth::login($user, true);
-
-        return $next($request);
+        // Execute handler
+        return $handler($flarum_user, $request, $next);
     }
 
     /**
@@ -89,43 +83,5 @@ class FlarumSessionMiddleware
             $session_path,
             $lifetime_minutes
         );
-    }
-
-    /**
-     * Create or update User.
-     */
-    protected function createOrUpdateUser(?User $user, object $flarum_user): User
-    {
-        // Get a user instance
-        if (null === $user) {
-            $user = $this->getUser();
-        }
-
-        // Attributes to update: Flarum user => local user
-        $update_attributes = Config::get('flarum.update_attributes', []);
-
-        // Update attributes
-        foreach ($update_attributes as $flarum_attribute => $local_attribute) {
-            $user->{$local_attribute} = $flarum_user->{$flarum_attribute};
-        }
-
-        // Set a random password
-        $user->password = bcrypt(Str::random(30));
-
-        // Save user
-        if ($user->isDirty()) {
-            $user->save();
-        }
-
-        // Return user
-        return $user;
-    }
-
-    /**
-     * Get User instance.
-     */
-    protected function getUser(): User
-    {
-        return Container::getInstance()->make(Config::get('flarum.model'));
     }
 }

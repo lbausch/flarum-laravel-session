@@ -7,11 +7,6 @@ return [
     'url' => env('FLARUM_URL'),
 
     /*
-     * Model which is authenticatable
-     */
-    'model' => config('auth.providers.users.model', App\User::class),
-
-    /*
      * Flarum session configuration
      */
     'session' => [
@@ -30,13 +25,4 @@ return [
      * Flarum database connection as defined in config/database.php
      */
     'db_connection' => env('FLARUM_DB_CONNECTION', 'flarum'),
-
-    /*
-     * Attributes to update upon successful authentication: Flarum user => local user
-     */
-    'update_attributes' => [
-        'username' => 'username',
-        'id' => 'flarum_id',
-        'email' => 'email',
-    ],
 ];
