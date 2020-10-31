@@ -49,11 +49,11 @@ class HandleIdentifiedUser implements FlarumUserIdentified
             $user->{$local_attribute} = $flarum_user->{$flarum_attribute};
         }
 
-        // Set a random password
-        $user->password = bcrypt(Str::random(30));
-
         // Save user
         if ($user->isDirty()) {
+            // Set a random password
+            $user->password = bcrypt(Str::random(30));
+
             $user->save();
         }
 
