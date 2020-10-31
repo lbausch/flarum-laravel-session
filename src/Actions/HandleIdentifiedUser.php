@@ -29,6 +29,8 @@ class HandleIdentifiedUser implements FlarumUserIdentified
 
     /**
      * Create or update User.
+     *
+     * @param \Illuminate\Foundation\Auth\User $user
      */
     protected function createOrUpdateUser(?User $user, object $flarum_user): User
     {
@@ -37,6 +39,24 @@ class HandleIdentifiedUser implements FlarumUserIdentified
             $user = $this->getUser();
         }
 
+        $user = $this->updateAttributes($user, $flarum_user);
+
+        // Save user
+        if ($user->isDirty()) {
+            $user->save();
+        }
+
+        // Return user
+        return $user;
+    }
+
+    /**
+     * Update attributes.
+     *
+     * @param \Illuminate\Foundation\Auth\User $user
+     */
+    protected function updateAttributes(?User $user, object $flarum_user): User
+    {
         // Attributes to update: Flarum user => local user
         $update_attributes = [
             'username' => 'username',
@@ -49,15 +69,11 @@ class HandleIdentifiedUser implements FlarumUserIdentified
             $user->{$local_attribute} = $flarum_user->{$flarum_attribute};
         }
 
-        // Save user
         if ($user->isDirty()) {
             // Set a random password
             $user->password = bcrypt(Str::random(30));
-
-            $user->save();
         }
 
-        // Return user
         return $user;
     }
 
