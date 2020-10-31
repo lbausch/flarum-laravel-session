@@ -13,12 +13,12 @@
 - [Usage](#usage)
   - [Setup Middleware](#setup-middleware)
   - [Handle An Identified User](#handle-an-identified-user)
-- [Accessing Session Cookie From Different Domain](#accessing-session-cookie-from-different-domain)
+- [Accessing Flarum Session Cookie From Different Domain](#accessing-flarum-session-cookie-from-different-domain)
 
 ## What It Does
 This package allows to use the session of [Flarum](https://flarum.org/) for authentication within a Laravel application.
 It accesses Flarum's session cookie and reads the session data from the session storage.
-Based on the user information in the Flarum database an user in the Laravel application is created / updated and logged in.
+Based on the user information in the Flarum user database an user in the Laravel application is created / updated and logged in.
 
 ## Requirements
 + PHP 7.3+
@@ -35,7 +35,7 @@ composer require lbausch/flarum-laravel-session
 ```
 
 ### Register Middleware
-Register the middleware in `app/Http/Kernel.php`:
+Register the `\Bausch\FlarumLaravelSession\FlarumSessionMiddleware` middleware in `app/Http/Kernel.php`:
 ```php
 /**
  * The application's route middleware.
@@ -102,9 +102,11 @@ Route::middleware(['flarum'])->group(function () {
     });
 });
 ```
+All requests to the `/` route will then be checked by the middleware.
 
 ### Handle An Identified User
-Once the middleware successfully identified an user, it executes the default handler `HandleIdentifiedUser`. You may configure a different handler by calling `FlarumLaravelSession::handleIdentifiedUser()` in a service provider. This is a perfect place to update attributes or execute further actions, just remember to implement the `FlarumUserIdentified` interface.
+Once the middleware successfully identified an user, it executes the default handler `\Bausch\FlarumLaravelSession\Actions\HandleIdentifiedUser`. You may configure a different handler by calling `FlarumLaravelSession::handleIdentifiedUser()` in a service provider. This is a perfect place to update attributes or execute further actions, just remember to implement the `\Bausch\FlarumLaravelSession\Contracts\FlarumUserIdentified` interface.
+Have a look at the default handler for a reference implementation.
 
 ```php
 <?php
@@ -139,9 +141,9 @@ class AppServiceProvider extends ServiceProvider
 }
 ```
 
-If you need to use a different user model, you may call `FlarumLaravelSession::useUserModel(User::class);` in your service provider.
+If you need to use a different user model than `App\Models\User`, you may call `FlarumLaravelSession::useUserModel(YourUser::class);` in your service provider.
 
-## Accessing Session Cookie From Different Domain
+## Accessing Flarum Session Cookie From Different Domain
 If Flarum is running on domain.tld and Laravel on sub.domain.tld you need to configure Flarum (`config.php`), so the session cookie can be accessed on the subdomain:
 ```php
 // Note the dot before domain.tld
