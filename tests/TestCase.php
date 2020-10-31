@@ -2,6 +2,8 @@
 
 namespace Tests;
 
+use Bausch\FlarumLaravelSession\Actions\HandleIdentifiedUser;
+use Bausch\FlarumLaravelSession\FlarumLaravelSession;
 use Bausch\FlarumLaravelSession\ServiceProvider;
 use Orchestra\Testbench\TestCase as BaseTestCase;
 use Tests\Models\User;
@@ -32,17 +34,11 @@ abstract class TestCase extends BaseTestCase
         // Flarum configuration
         $app['config']->set('flarum', [
             'url' => 'https://flarum.tld',
-            'model' => User::class,
             'session' => [
                 'cookie' => 'flarum_session',
                 'path' => 'storage',
             ],
             'db_connection' => 'flarum',
-            'update_attributes' => [
-                'username' => 'username',
-                'id' => 'flarum_id',
-                'email' => 'email',
-            ],
         ]);
 
         // Local database
@@ -61,6 +57,9 @@ abstract class TestCase extends BaseTestCase
             'prefix' => '',
             'foreign_key_constraints' => true,
         ]);
+
+        FlarumLaravelSession::handleIdentifiedUser(HandleIdentifiedUser::class);
+        FlarumLaravelSession::useUserModel(User::class);
     }
 
     /**

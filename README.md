@@ -2,8 +2,6 @@
 
 ![tests](https://github.com/lbausch/flarum-laravel-session/workflows/tests/badge.svg) [![codecov](https://codecov.io/gh/lbausch/flarum-laravel-session/branch/master/graph/badge.svg)](https://codecov.io/gh/lbausch/flarum-laravel-session)
 
-**Disclaimer**: This package is still a proof of concept.
-
 - [What It Does](#what-it-does)
 - [Requirements](#requirements)
 - [Installation and Configuration](#installation-and-configuration)
@@ -14,17 +12,17 @@
   - [Disable Cookie Encryption](#disable-cookie-encryption)
 - [Usage](#usage)
   - [Setup Middleware](#setup-middleware)
-  - [Updating Attributes](#updating-attributes)
-- [Accessing Session Cookie From Different Domain](#accessing-session-cookie-from-different-domain)
+  - [Handle An Identified User](#handle-an-identified-user)
+- [Accessing Flarum Session Cookie From Different Domain](#accessing-flarum-session-cookie-from-different-domain)
 
 ## What It Does
 This package allows to use the session of [Flarum](https://flarum.org/) for authentication within a Laravel application.
 It accesses Flarum's session cookie and reads the session data from the session storage.
-Based on the user information in the Flarum database an user in the Laravel application is created / updated and logged in.
+Based on the user information in the Flarum user database an user in the Laravel application is created / updated and logged in.
 
 ## Requirements
-+ PHP 7.2+
-+ Laravel 7
++ PHP 7.3+
++ Laravel 8
 + Working installation of Flarum in the same filesystem as the Laravel application, so Flarum's session files can be read
 + Flarum and Laravel need to share the same domain / subdomain, so Flarum's session cookie can be accessed
 
@@ -37,7 +35,7 @@ composer require lbausch/flarum-laravel-session
 ```
 
 ### Register Middleware
-Register the middleware in `app/Http/Kernel.php`:
+Register the `\Bausch\FlarumLaravelSession\FlarumSessionMiddleware` middleware in `app/Http/Kernel.php`:
 ```php
 /**
  * The application's route middleware.
@@ -104,13 +102,48 @@ Route::middleware(['flarum'])->group(function () {
     });
 });
 ```
+All requests to the `/` route will then be checked by the middleware.
 
-### Updating Attributes
-Attributes which are updated upon a successful authentication can be specified by modifying the array `update_attributes` in `config/flarum.php`.
-To track the relationship between your local user and the Flarum user, you may add a column `flarum_id` to your users table.
+### Handle An Identified User
+Once the middleware successfully identified an user, it executes the default handler `\Bausch\FlarumLaravelSession\Actions\HandleIdentifiedUser`. You may configure a different handler by calling `FlarumLaravelSession::handleIdentifiedUser()` in a service provider. This is a perfect place to update attributes or execute further actions, just remember to implement the `\Bausch\FlarumLaravelSession\Contracts\FlarumUserIdentified` interface.
+Have a look at the default handler for a reference implementation.
 
+```php
+<?php
 
-## Accessing Session Cookie From Different Domain
+namespace App\Providers;
+
+use Illuminate\Support\ServiceProvider;
+use Bausch\FlarumLaravelSession\FlarumLaravelSession;
+use App\Handlers\YourCustomHandler;
+
+class AppServiceProvider extends ServiceProvider
+{
+    /**
+     * Register any application services.
+     *
+     * @return void
+     */
+    public function register()
+    {
+        //
+    }
+
+    /**
+     * Bootstrap any application services.
+     *
+     * @return void
+     */
+    public function boot()
+    {
+        FlarumLaravelSession::handleIdentifiedUser(YourCustomHandler::class);
+    }
+}
+```
+
+If you need to use a different user model than `App\Models\User`, you may call `FlarumLaravelSession::useUserModel(YourUser::class);` in your service provider.
+
+## Accessing Flarum Session Cookie From Different Domain
 If Flarum is running on domain.tld and Laravel on sub.domain.tld you need to configure Flarum (`config.php`), so the session cookie can be accessed on the subdomain:
 ```php
 // Note the dot before domain.tld
