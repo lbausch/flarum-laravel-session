@@ -11,7 +11,7 @@ class FlarumLaravelSession
      *
      * @var string
      */
-    public static $userModel = 'App\\User';
+    public static $userModel = 'App\\Models\\User';
 
     /**
      * Register class that handles actions once a Flarum user has been identified.
