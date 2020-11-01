@@ -141,7 +141,7 @@ class AppServiceProvider extends ServiceProvider
 }
 ```
 
-If you need to use a different user model than `App\Models\User`, you may call `FlarumLaravelSession::useUserModel(YourUser::class);` in your service provider.
+If you need to use a different user model than `App\Models\User`, you may call `FlarumLaravelSession::useUserModel(YourUser::class)` in your service provider.
 
 ## Accessing Flarum Session Cookie From Different Domain
 If Flarum is running on domain.tld and Laravel on sub.domain.tld you need to configure Flarum (`config.php`), so the session cookie can be accessed on the subdomain:
