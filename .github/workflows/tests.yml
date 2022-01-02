@@ -22,7 +22,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        php: [7.3, 7.4]
+        php: ['7.3', '7.4', '8.0', '8.1']
         stability: [prefer-lowest, prefer-stable]
 
     name: PHP ${{ matrix.php }} - ${{ matrix.stability }}
@@ -54,6 +54,7 @@ jobs:
           DB_USERNAME: root
 
       - name: Upload coverage to Codecov
+        if: ${{ github.ref == 'refs/heads/master' && matrix.php == '8.0' && matrix.stability == 'prefer-stable' }}
         uses: codecov/codecov-action@v1
         with:
           file: ./coverage.xml

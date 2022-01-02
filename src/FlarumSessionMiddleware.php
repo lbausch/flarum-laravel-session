@@ -41,13 +41,23 @@ class FlarumSessionMiddleware
         // Start session
         $session_store->start();
 
-        // Try to get user id
-        $user_id = $session_store->get('user_id', false);
+        // Try to get access_token
+        $access_token = $session_store->get('access_token', false);
 
-        // Redirect if no user id was found
-        if (!$user_id) {
+        // Redirect if no access_token was found
+        if (!$access_token) {
             return redirect(Config::get('flarum.url'));
         }
+
+        // Try to get token data with user id
+        $token_data = $flarum_user = DB::connection(Config::get('flarum.db_connection'))->table('access_tokens')->where('token', $access_token)->first();
+
+        // Redirect if no token was found
+        if (!$token_data || !$token_data->user_id) {
+            return redirect(Config::get('flarum.url'));
+        }
+
+        $user_id = $token_data->user_id;
 
         // Get Flarum user from Flarum database
         $flarum_user = DB::connection(Config::get('flarum.db_connection'))->table('users')->find($user_id);
