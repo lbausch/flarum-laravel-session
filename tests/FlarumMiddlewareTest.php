@@ -169,7 +169,7 @@ final class MiddlewareTest extends TestCase
         $this->assertTrue($next_request_executed);
 
         // Mock Filesystem
-        $this->partialMock(Filesystem::class, function ($mock) use ($session_file) {
+        $this->partialMock(Filesystem::class, function ($mock) {
             $mock->shouldReceive('isFile')
                 ->never();
 
