@@ -60,7 +60,7 @@ final class MiddlewareTest extends TestCase
             $mock->shouldReceive('sharedGet')
                 ->once()
                 ->with($session_file)
-                ->andReturn(serialize(['user_id' => 1]));
+                ->andReturn(serialize(['access_token' => 'foobar']));
         });
 
         $request = new Request($query = [], $request = [], $attributes = [], $cookies = [
@@ -107,7 +107,7 @@ final class MiddlewareTest extends TestCase
             $mock->shouldReceive('sharedGet')
                 ->once()
                 ->with($session_file)
-                ->andReturn(serialize(['user_id' => 1]));
+                ->andReturn(serialize(['access_token' => 'foobar']));
         });
 
         $request = new Request($query = [], $request = [], $attributes = [], $cookies = [
@@ -153,7 +153,7 @@ final class MiddlewareTest extends TestCase
             $mock->shouldReceive('sharedGet')
                 ->once()
                 ->with($session_file)
-                ->andReturn(serialize(['user_id' => 1]));
+                ->andReturn(serialize(['access_token' => 'foobar']));
         });
 
         $request = new Request($query = [], $request = [], $attributes = [], $cookies = [
@@ -209,7 +209,7 @@ final class MiddlewareTest extends TestCase
             $mock->shouldReceive('sharedGet')
                 ->once()
                 ->with($session_file)
-                ->andReturn(serialize(['user_id' => 2]));
+                ->andReturn(serialize(['access_token' => 'loremipsum']));
         });
 
         $request = new Request($query = [], $request = [], $attributes = [], $cookies = [
