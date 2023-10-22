@@ -29,8 +29,6 @@ class HandleIdentifiedUser implements FlarumUserIdentified
 
     /**
      * Create or update User.
-     *
-     * @param \Illuminate\Foundation\Auth\User $user
      */
     protected function createOrUpdateUser(?User $user, object $flarum_user): User
     {
@@ -52,8 +50,6 @@ class HandleIdentifiedUser implements FlarumUserIdentified
 
     /**
      * Update attributes.
-     *
-     * @param \Illuminate\Foundation\Auth\User $user
      */
     protected function updateAttributes(?User $user, object $flarum_user): User
     {
