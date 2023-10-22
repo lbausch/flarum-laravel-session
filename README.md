@@ -21,8 +21,8 @@ It accesses Flarum's session cookie and reads the session data from the session 
 Based on the user information in the Flarum user database an user in the Laravel application is created / updated and logged in.
 
 ## Requirements
-+ PHP 7.3+
-+ Laravel 8
++ PHP 8.1+
++ Laravel 10
 + Working installation of Flarum in the same filesystem as the Laravel application, so Flarum's session files can be read
 + Flarum and Laravel need to share the same domain / subdomain, so Flarum's session cookie can be accessed
 
