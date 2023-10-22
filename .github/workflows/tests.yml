@@ -5,6 +5,7 @@ on:
   pull_request:
   schedule:
     - cron: '0 0 * * *'
+  workflow_dispatch: {}
 
 jobs:
   tests:
@@ -22,17 +23,17 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        php: ['7.3', '7.4', '8.0', '8.1']
+        php: ['8.1', '8.2']
         stability: [prefer-lowest, prefer-stable]
 
     name: PHP ${{ matrix.php }} - ${{ matrix.stability }}
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Cache dependencies
-        uses: actions/cache@v1
+        uses: actions/cache@v3
         with:
           path: ~/.composer/cache/files
           key: dependencies-php-${{ matrix.php }}-composer-${{ hashFiles('composer.json') }}
@@ -48,13 +49,13 @@ jobs:
         run: composer update --${{ matrix.stability }} --prefer-dist --no-interaction --no-progress
 
       - name: Execute tests
-        run: vendor/bin/phpunit --verbose --coverage-clover coverage.xml
+        run: vendor/bin/phpunit --coverage-clover coverage.xml
         env:
           DB_PORT: ${{ job.services.mysql.ports[3306] }}
           DB_USERNAME: root
 
       - name: Upload coverage to Codecov
-        if: ${{ github.ref == 'refs/heads/master' && matrix.php == '8.0' && matrix.stability == 'prefer-stable' }}
-        uses: codecov/codecov-action@v1
+        if: ${{ github.ref == 'refs/heads/master' && matrix.php == '8.1' && matrix.stability == 'prefer-stable' }}
+        uses: codecov/codecov-action@v3
         with:
           file: ./coverage.xml

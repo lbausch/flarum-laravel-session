@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
-final class MiddlewareTest extends TestCase
+final class FlarumMiddlewareTest extends TestCase
 {
     public function testExceptionIsThrownIfSessionCouldNotBeFound()
     {
