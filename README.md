@@ -38,13 +38,13 @@ composer require lbausch/flarum-laravel-session
 Register the `\Bausch\FlarumLaravelSession\FlarumSessionMiddleware` middleware in `app/Http/Kernel.php`:
 ```php
 /**
- * The application's route middleware.
+ * The application's middleware aliases.
  *
- * These middleware may be assigned to groups or used individually.
+ * Aliases may be used instead of class names to conveniently assign middleware to routes and groups.
  *
- * @var array
+ * @var array<string, class-string|string>
  */
-protected $routeMiddleware = [
+protected $middlewareAliases = [
     // ...
     'flarum' => \Bausch\FlarumLaravelSession\FlarumSessionMiddleware::class,
     // ...
@@ -84,7 +84,7 @@ To avoid Laravel from trying to encrypt the Flarum session cookie, add the follo
 /**
  * The names of the cookies that should not be encrypted.
  *
- * @var array
+ * @var array<int, string>
  */
 protected $except = [
     'flarum_session',
@@ -121,10 +121,8 @@ class AppServiceProvider extends ServiceProvider
 {
     /**
      * Register any application services.
-     *
-     * @return void
      */
-    public function register()
+    public function register(): void
     {
         //
     }
@@ -134,7 +132,7 @@ class AppServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function boot()
+    public function boot(): void
     {
         FlarumLaravelSession::handleIdentifiedUser(YourCustomHandler::class);
     }
