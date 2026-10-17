@@ -21,8 +21,8 @@ It accesses Flarum's session cookie and reads the session data from the session 
 Based on the user information in the Flarum user database an user in the Laravel application is created / updated and logged in.
 
 ## Requirements
-+ PHP 8.1+
-+ Laravel 10
++ PHP 8.4+
++ Laravel 13
 + Working installation of Flarum in the same filesystem as the Laravel application, so Flarum's session files can be read
 + Flarum and Laravel need to share the same domain / subdomain, so Flarum's session cookie can be accessed
 
@@ -35,42 +35,39 @@ composer require lbausch/flarum-laravel-session
 ```
 
 ### Register Middleware
-Register the `\Bausch\FlarumLaravelSession\FlarumSessionMiddleware` middleware in `app/Http/Kernel.php`:
+Register the `\Bausch\FlarumLaravelSession\FlarumSessionMiddleware` middleware as an alias in `bootstrap/app.php`:
+
 ```php
-/**
- * The application's middleware aliases.
- *
- * Aliases may be used instead of class names to conveniently assign middleware to routes and groups.
- *
- * @var array<string, class-string|string>
- */
-protected $middlewareAliases = [
+->withMiddleware(function (Middleware $middleware) {
+    $middleware->alias([
+        'flarum' => \Bausch\FlarumLaravelSession\FlarumSessionMiddleware::class,
+    ]);
+
     // ...
-    'flarum' => \Bausch\FlarumLaravelSession\FlarumSessionMiddleware::class,
-    // ...
-];
+})
 ```
 
 ### Setup Database Connection
 Define a database connection for the Flarum database in `config/database.php`:
+
 ```php
 'flarum' => [
-    'driver' => 'mysql',
+    'driver' => 'mariadb',
     'url' => env('FLARUM_DATABASE_URL'),
     'host' => env('FLARUM_DB_HOST', '127.0.0.1'),
     'port' => env('FLARUM_DB_PORT', '3306'),
-    'database' => env('FLARUM_DB_DATABASE', 'forge'),
-    'username' => env('FLARUM_DB_USERNAME', 'forge'),
+    'database' => env('FLARUM_DB_DATABASE', 'laravel'),
+    'username' => env('FLARUM_DB_USERNAME', 'root'),
     'password' => env('FLARUM_DB_PASSWORD', ''),
     'unix_socket' => env('FLARUM_DB_SOCKET', ''),
-    'charset' => 'utf8mb4',
-    'collation' => 'utf8mb4_unicode_ci',
+    'charset' => env('FLARUM_DB_CHARSET', 'utf8mb4'),
+    'collation' => env('FLARUM_DB_COLLATION', 'utf8mb4_unicode_ci'),
     'prefix' => '',
     'prefix_indexes' => true,
     'strict' => true,
     'engine' => null,
     'options' => extension_loaded('pdo_mysql') ? array_filter([
-        PDO::MYSQL_ATTR_SSL_CA => env('FLARUM_MYSQL_ATTR_SSL_CA'),
+        Mysql::ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
     ]) : [],
 ],
 ```
@@ -79,16 +76,14 @@ Define a database connection for the Flarum database in `config/database.php`:
 Publish the package configuration using `php artisan vendor:publish --provider=Bausch\\FlarumLaravelSession\\ServiceProvider` and update `config/flarum.php` with your settings.
 
 ### Disable Cookie Encryption
-To avoid Laravel from trying to encrypt the Flarum session cookie, add the following to `app/Http/Middleware/EncryptCookies.php`:
+To prevent Laravel from encrypting the Flarum session cookie, exclude it in `bootstrap/app.php`:
+
 ```php
-/**
- * The names of the cookies that should not be encrypted.
- *
- * @var array<int, string>
- */
-protected $except = [
-    'flarum_session',
-];
+->withMiddleware(function (Middleware $middleware) {
+    $middleware->encryptCookies(except: ['flarum_session']);
+
+    // ...
+})
 ```
 
 ## Usage
@@ -102,6 +97,7 @@ Route::middleware(['flarum'])->group(function () {
     });
 });
 ```
+
 All requests to the `/` route will then be checked by the middleware.
 
 ### Handle An Identified User
@@ -143,6 +139,7 @@ If you need to use a different user model than `App\Models\User`, you may call `
 
 ## Accessing Flarum Session Cookie From Different Domain
 If Flarum is running on domain.tld and Laravel on sub.domain.tld you need to configure Flarum (`config.php`), so the session cookie can be accessed on the subdomain:
+
 ```php
 // Note the dot before domain.tld
 'cookie' => ['domain' => '.domain.tld'],
