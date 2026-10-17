@@ -1,0 +1,7 @@
+/tests export-ignore
+/.github export-ignore
+/.php-cs-fixer.dist.php export-ignore
+/phpunit.xml.dist export-ignore
+/.editorconfig export-ignore
+
+*.php text eol=lf
