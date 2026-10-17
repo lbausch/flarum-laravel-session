@@ -229,6 +229,70 @@ final class FlarumMiddlewareTest extends TestCase
         $this->assertTrue($exception_was_thrown);
     }
 
+    public function testMiddlewareRedirectsIfTokenCouldNotBeFound()
+    {
+        $session_id = $this->generateSessionId();
+        $session_file = Config::get('flarum.session.path').'/'.$session_id;
+
+        // Mock Filesystem
+        $this->partialMock(Filesystem::class, function ($mock) use ($session_file) {
+            $mock->shouldReceive('isFile')
+                ->once()
+                ->with($session_file)
+                ->andReturn(true);
+
+            $mock->shouldReceive('lastModified')
+                ->once()
+                ->with($session_file)
+                ->andReturn(time());
+
+            $mock->shouldReceive('sharedGet')
+                ->once()
+                ->with($session_file)
+                ->andReturn(serialize(['access_token' => 'doesnotexist']));
+        });
+
+        $request = new Request($query = [], $request = [], $attributes = [], $cookies = [
+            'flarum_session' => $session_id,
+        ]);
+
+        $response = (new FlarumSessionMiddleware())->handle($request, function ($request) {});
+
+        $this->assertEquals(Config::get('flarum.url'), $response->getTargetUrl());
+    }
+
+    public function testMiddlewareRedirectsIfTokenHasNoUser()
+    {
+        $session_id = $this->generateSessionId();
+        $session_file = Config::get('flarum.session.path').'/'.$session_id;
+
+        // Mock Filesystem
+        $this->partialMock(Filesystem::class, function ($mock) use ($session_file) {
+            $mock->shouldReceive('isFile')
+                ->once()
+                ->with($session_file)
+                ->andReturn(true);
+
+            $mock->shouldReceive('lastModified')
+                ->once()
+                ->with($session_file)
+                ->andReturn(time());
+
+            $mock->shouldReceive('sharedGet')
+                ->once()
+                ->with($session_file)
+                ->andReturn(serialize(['access_token' => 'nouser']));
+        });
+
+        $request = new Request($query = [], $request = [], $attributes = [], $cookies = [
+            'flarum_session' => $session_id,
+        ]);
+
+        $response = (new FlarumSessionMiddleware())->handle($request, function ($request) {});
+
+        $this->assertEquals(Config::get('flarum.url'), $response->getTargetUrl());
+    }
+
     /**
      * Generate session id.
      */
